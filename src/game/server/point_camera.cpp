@@ -46,7 +46,7 @@ CPointCamera::~CPointCamera()
 CPointCamera::CPointCamera()
 {
 	// Set these to opposites so that it'll be sent the first time around.
-	m_bActive = false;
+	m_bActive = true; // ZZ: Fix a multiplayer bug in CPointCamera::CPointCamera() by setting m_bActive to true.
 	m_bIsOn = false;
 	
 	m_bFogEnable = false;

@@ -33,13 +33,13 @@ class CBaseGrenade :
 	#if defined( HL2_EPISODIC )
 		public CBaseCombatCharacter
 	#else
-		public CBaseAnimating
+		public CBaseCombatCharacter //CBaseAnimating
 	#endif
 	#if defined( GAME_DLL )
 		, public CDefaultPlayerPickupVPhysics
 	#endif
 {		//Tony; the ugliest class definition ever, but it saves characters, or something. Should I be shot for this?
-	DECLARE_CLASS( CBaseGrenade, CBaseAnimating );
+	DECLARE_CLASS( CBaseGrenade, CBaseCombatCharacter /*CBaseAnimating*/ );
 public:
 
 	CBaseGrenade(void);
