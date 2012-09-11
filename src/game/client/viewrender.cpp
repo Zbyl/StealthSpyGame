@@ -68,6 +68,9 @@
 // Projective textures
 #include "c_env_projected_texture.h"
 
+// ZZ test
+#include "filesystem.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -2799,6 +2802,46 @@ void CViewRender::ViewDrawScene_Intro( const CViewSetup &view, int nClearFlags, 
 //			highend - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
+
+// ZZ: modified from DrawScreenEffectMaterial() and UpdateScreenEffectTexture()
+void AnalyzeRenderTarget()
+{
+	CMatRenderContextPtr pRenderContext( materials );
+	int nSrcWidth, nSrcHeight;
+	pRenderContext->GetRenderTargetDimensions( nSrcWidth, nSrcHeight );
+
+	static int cnt = 0;
+	cnt++;
+	bool dumpTest = false;
+	if (cnt > 3000)
+	{
+		cnt = 0;
+		dumpTest = true;
+		//Msg("Dumping image!");
+	}
+
+	if (!dumpTest)
+	{
+		if (nSrcWidth > 5) nSrcWidth = 5;
+		if (nSrcHeight > 5) nSrcHeight = 5;
+	}
+	unsigned char* data = new unsigned char[nSrcWidth * nSrcHeight * 4];
+	pRenderContext->ReadPixels(0, 0, nSrcWidth, nSrcHeight, data, IMAGE_FORMAT_RGBA8888);
+
+	if (dumpTest)
+	{
+		FileHandle_t fp = g_pFullFileSystem->Open( "testCam1.raw", "wb" );
+		if (fp)
+		{
+			g_pFullFileSystem->Write(data, nSrcWidth * nSrcHeight * 4, fp);
+			g_pFullFileSystem->Flush(fp);
+			g_pFullFileSystem->Close(fp);
+		}
+	}
+
+	delete [] data;
+}
+
 bool CViewRender::DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_PointCamera *pCameraEnt, 
 	const CViewSetup &cameraView, C_BasePlayer *localPlayer, int x, int y, int width, int height )
 {
@@ -2854,6 +2897,9 @@ bool CViewRender::DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_Poin
 	Frustum frustum;
  	render->Push3DView( monitorView, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, pRenderTarget, (VPlane *)frustum );
 	ViewDrawScene( false, SKYBOX_2DSKYBOX_VISIBLE, monitorView, 0, VIEW_MONITOR );
+
+	AnalyzeRenderTarget();
+
  	render->PopView( frustum );
 
 	// Reset the world fog parameters.
@@ -2868,6 +2914,7 @@ bool CViewRender::DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_Poin
 #endif // USE_MONITORS
 	return true;
 }
+
 
 void CViewRender::DrawMonitors( const CViewSetup &cameraView )
 {
