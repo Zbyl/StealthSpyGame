@@ -1,0 +1,6 @@
+# Ignore ALL
+*
+
+# Except Client.dll
+!Client.dll
+!.gitignore

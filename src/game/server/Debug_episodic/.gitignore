@@ -1,0 +1,6 @@
+# Ignore ALL
+*
+
+# Except Server.dll
+!Server.dll
+!.gitignore
